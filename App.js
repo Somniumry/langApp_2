@@ -39,6 +39,7 @@ const Center = styled.View`
   flex: 3;
   justify-content: center;
   align-items: center;
+  z-index: 10; // 아이콘이 글씨보다 상위
 `
 
 // Animated.View에 value 연결
@@ -57,6 +58,12 @@ const App = () => {
   const scale = useRef(new Animated.Value(1)).current; // 크기 기본 1
   const position = useRef(new Animated.ValueXY({ x: 0, y: 0 })).current; // 위치 기본 x,y
 
+  // Interpolation : 입력값(input)을 받아서 output값으로 변환
+  const scaleOne = position.y.interpolate({ // y위치를 기준
+    inputRange: [-300, -80], // 코드 해석 : 아이콘의 y위치가 -300 ~ -80 위치라면
+    outputRange: [2, 1] // scale이 2, 1
+  });
+
   // Animations
   // PanResponderGrant
   const onPressIn = Animated.spring(scale, {
@@ -65,11 +72,14 @@ const App = () => {
   })
 
   // PanResponderRelease
+  // 터치가 끝났을 때 아이콘 크기를 1로
   const onPressOut = Animated.spring(scale, {
     toValue: 1,
     useNativeDriver: true
   })
 
+  // PanResponderRelease
+  // 터치 끝났을 때 아이콘의 위치를 0으로
   const goHome = Animated.spring(position, {
     toValue: 0,
     useNativeDriver: true
@@ -89,7 +99,7 @@ const App = () => {
     },
     // 터치가 끝났을 때
     onPanResponderRelease: () => {
-      Animated.parallel([onPressIn, goHome]).start()
+      Animated.parallel([onPressOut, goHome]).start()
       // onPressOut.start() // 아이콘 크기 기본 값(1)으로
       // goHome.start() // 아이콘 위치 가운데로
     }
@@ -98,7 +108,8 @@ const App = () => {
   return (
     <Container>
       <Edge>
-        <WordContainer>
+        {/* scale크기를 scaleOne으로 적용 : 아이콘의 y축이 scaleOne > inputRange 위치에 오면 WordContainer의 scale이 scaleOne > output사이즈로 변환됨 */}
+        <WordContainer style={{ transform: [{ scale: scaleOne}]}}>
           <Word color={GREEN}>알아</Word>
         </WordContainer>
       </Edge>
