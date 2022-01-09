@@ -106,10 +106,15 @@ const App = () => {
       onPressIn.start()
     },
     // 터치가 끝났을 때
-    onPanResponderRelease: () => {
-      Animated.parallel([onPressOut, goHome]).start()
-      // onPressOut.start() // 아이콘 크기 기본 값(1)으로
-      // goHome.start() // 아이콘 위치 가운데로
+    onPanResponderRelease: (_, { dy }) => {
+      // 아이콘 y축이 -250이면 0으로 돌아가지 않고 drop
+      if (dy < -250) {
+        // drop
+      } else if (dy > 250) {
+        // drop
+      } else {
+        Animated.parallel([onPressOut, goHome]).start()
+      }
     }
   })).current
 
