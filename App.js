@@ -67,7 +67,7 @@ const App = () => {
       <Center>
         <IconCard style={{
           transform: [
-            ...position.getTranslateTransform(),
+            ...position.getTranslateTransform(), // x,y 값 받아서 x,y를 css로 변환?
             {scale: scale}
           ]
         }}>
