@@ -61,14 +61,22 @@ const App = () => {
   // Interpolation : 입력값(input)을 받아서 output값으로 변환
   const scaleOne = position.y.interpolate({ // y위치를 기준
     inputRange: [-300, -80], // 코드 해석 : 아이콘의 y위치가 -300 ~ -80 위치라면
-    outputRange: [2, 1] // scale이 2, 1
+    outputRange: [2, 1], // scale이 2, 1
+    extrapolate: "clamp"
+  });
+
+  // 하단(몰라) 부분
+  const scaleTwo = position.y.interpolate({ // y위치를 기준
+    inputRange: [80, 300],
+    outputRange: [1, 2],
+    extrapolate: "clamp"
   });
 
   // Animations
   // PanResponderGrant
   const onPressIn = Animated.spring(scale, {
     toValue: 0.8,
-    useNativeDriver: true
+    useNativeDriver: true,
   })
 
   // PanResponderRelease
@@ -127,7 +135,7 @@ const App = () => {
         </IconCard>
       </Center>
       <Edge>
-        <WordContainer>
+        <WordContainer style={{ transform: [{ scale: scaleTwo }] }}>
           <Word color={RED}>몰라</Word>
         </WordContainer>
       </Edge>
