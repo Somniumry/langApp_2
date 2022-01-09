@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import styled from 'styled-components/native';
-import { Animated, Text, View } from 'react-native'
+import { Animated, PanResponder, Text, View } from 'react-native'
 import Icon2 from 'react-native-vector-icons/dist/FontAwesome5';
 import icons from './icons'
 
@@ -57,6 +57,26 @@ const App = () => {
   const scale = useRef(new Animated.Value(1)).current; // 크기 기본 1
   const position = useRef(new Animated.ValueXY({ x: 0, y: 0 })).current; // 위치 기본 x,y
 
+  // Pan Responder
+  const panResponder = useRef(PanResponder.create({
+    // 손가락 이벤트를 감지할 것인가, 말 것인가
+    onStartShouldSetPanResponder: () => true,
+    // scale을 위한 애니메이션 만듬 = 유저에게 아이콘 눌렀음을 보여주기 위해
+    onPanResponderGrant: () =>{
+      Animated.spring(scale, {
+        toValue: 0.8,
+        useNativeDriver: true
+      }).start()
+    },
+    // 터치가 끝났을 때
+    onPanResponderRelease: () => {
+      Animated.spring(scale, {
+        toValue: 1,
+        useNativeDriver: true
+      }).start()
+    }
+  })).current
+
   return (
     <Container>
       <Edge>
@@ -65,12 +85,15 @@ const App = () => {
         </WordContainer>
       </Edge>
       <Center>
-        <IconCard style={{
-          transform: [
-            ...position.getTranslateTransform(), // x,y 값 받아서 x,y를 css로 변환?
-            {scale: scale}
-          ]
-        }}>
+        <IconCard
+          // panResponder를 이용하기 위해
+          {...panResponder.panHandlers}
+          style={{
+            transform: [
+              ...position.getTranslateTransform(), // x,y 값 받아서 x,y를 css로 변환?
+              { scale: scale }
+            ]
+          }}>
           <Icon2 name="at" size={76} color={GREY} />
         </IconCard>
       </Center>
