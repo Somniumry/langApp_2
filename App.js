@@ -89,8 +89,9 @@ const App = () => {
     },
     // 터치가 끝났을 때
     onPanResponderRelease: () => {
-      onPressOut.start() // 아이콘 크기 기본 값(1)으로
-      goHome.start() // 아이콘 위치 가운데로
+      Animated.parallel([onPressIn, goHome]).start()
+      // onPressOut.start() // 아이콘 크기 기본 값(1)으로
+      // goHome.start() // 아이콘 위치 가운데로
     }
   })).current
 
