@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import styled from 'styled-components/native';
-import { Animated, PanResponder, Text, View } from 'react-native'
+import { Animated, Easing, PanResponder, Text, View } from 'react-native'
 import Icon2 from 'react-native-vector-icons/dist/FontAwesome5';
 import icons from './icons'
 
@@ -94,7 +94,17 @@ const App = () => {
   })
 
   // drop
-  const onDrop = Animated.timing(scale, {
+  const onDropScale = Animated.timing(scale, {
+    toValue: 0,
+    useNativeDriver: true
+  })
+
+  const onDropPosition = Animated.timing(position, { // '알아' 컨테이너 크기를 원래대로 돌아가게
+    // toValue: 0과 같은거임
+    // toValue: {
+    //   x: 0,
+    //   y: 0
+    // }
     toValue: 0,
     useNativeDriver: true
   })
@@ -114,20 +124,16 @@ const App = () => {
     // 터치가 끝났을 때
     onPanResponderRelease: (_, { dy }) => {
       // 아이콘 y축이 -250이면 0으로 돌아가지 않고 drop
-      if (dy < -250) {
-        // drop
-        onDrop.start() // drop으로 아이콘 크기 0으로
-        Animated.timing(position, { // '알아' 컨테이너 크기를 원래대로 돌아가게
-          // toValue: 0과 같은거임
-          // toValue: {
-          //   x: 0,
-          //   y: 0
-          // }
-          toValue: 0,
-          useNativeDriver: true
-        }).start()
-      } else if (dy > 250) {
-        // drop
+      if (dy < -250 || dy > 250) {
+        Animated.sequence([
+          Animated.parallel([onDropScale, onDropPosition]),
+          Animated.timing(position, { // parallel이 실행되고 나서 home으로 가고싶음?
+            toValue: 0,
+            duration: 300,
+            easing: Easing.linear,
+            useNativeDriver: true
+          })
+        ]).start()
       } else {
         Animated.parallel([onPressOut, goHome]).start()
       }
@@ -138,7 +144,7 @@ const App = () => {
     <Container>
       <Edge>
         {/* scale크기를 scaleOne으로 적용 : 아이콘의 y축이 scaleOne > inputRange 위치에 오면 WordContainer의 scale이 scaleOne > output사이즈로 변환됨 */}
-        <WordContainer style={{ transform: [{ scale: scaleOne}]}}>
+        <WordContainer style={{ transform: [{ scale: scaleOne }] }}>
           <Word color={GREEN}>알아</Word>
         </WordContainer>
       </Edge>
