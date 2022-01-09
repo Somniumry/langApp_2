@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import styled from 'styled-components/native';
 import { Animated, Easing, PanResponder, Text, View } from 'react-native'
 import Icon2 from 'react-native-vector-icons/dist/FontAwesome5';
@@ -133,12 +133,21 @@ const App = () => {
             easing: Easing.linear,
             useNativeDriver: true
           })
-        ]).start()
+        ]).start(nextIcon) // sequence가 끝나고 nextIcon 호출
       } else {
         Animated.parallel([onPressOut, goHome]).start()
       }
     }
   })).current
+
+  const [index, setIndex] = useState(0);
+  const nextIcon = () => {
+    Animated.spring(scale, { toValue: 1, useNativeDriver: true }).start(); // 아이콘 크기를 1로
+    // 위치는 왜 여기서 설정하지 않는가?
+    // 이미 위의 sequence에서 position 위치를 0으로(toValue:0) 해둔 상태에서
+    // sequence가 다 끝나고 nextIcon을 호출한거임
+    setIndex((prev) => prev + 1)
+  }
 
   return (
     <Container>
@@ -158,7 +167,7 @@ const App = () => {
               { scale: scale }
             ]
           }}>
-          <Icon2 name="at" size={76} color={GREY} />
+          <Icon2 name={icons[index]} size={76} color={GREY} />
         </IconCard>
       </Center>
       <Edge>
