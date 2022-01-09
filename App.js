@@ -93,6 +93,12 @@ const App = () => {
     useNativeDriver: true
   })
 
+  // drop
+  const onDrop = Animated.timing(scale, {
+    toValue: 0,
+    useNativeDriver: true
+  })
+
   // Pan Responder
   const panResponder = useRef(PanResponder.create({
     // 손가락 이벤트를 감지할 것인가, 말 것인가
@@ -110,6 +116,16 @@ const App = () => {
       // 아이콘 y축이 -250이면 0으로 돌아가지 않고 drop
       if (dy < -250) {
         // drop
+        onDrop.start() // drop으로 아이콘 크기 0으로
+        Animated.timing(position, { // '알아' 컨테이너 크기를 원래대로 돌아가게
+          // toValue: 0과 같은거임
+          // toValue: {
+          //   x: 0,
+          //   y: 0
+          // }
+          toValue: 0,
+          useNativeDriver: true
+        }).start()
       } else if (dy > 250) {
         // drop
       } else {
