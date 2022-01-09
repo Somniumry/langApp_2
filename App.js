@@ -70,6 +70,11 @@ const App = () => {
     useNativeDriver: true
   })
 
+  const goHome = Animated.spring(position, {
+    toValue: 0,
+    useNativeDriver: true
+  })
+
   // Pan Responder
   const panResponder = useRef(PanResponder.create({
     // 손가락 이벤트를 감지할 것인가, 말 것인가
@@ -84,7 +89,8 @@ const App = () => {
     },
     // 터치가 끝났을 때
     onPanResponderRelease: () => {
-      onPressOut.start()
+      onPressOut.start() // 아이콘 크기 기본 값(1)으로
+      goHome.start() // 아이콘 위치 가운데로
     }
   })).current
 
